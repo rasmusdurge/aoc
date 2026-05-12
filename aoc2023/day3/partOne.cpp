@@ -3,16 +3,53 @@
 #include <map>
 #include <regex>
 #include <set>
+#include <vector>
 
-// Add up all the part numbers
-// If its not next to a number or dot 
-// Assume parts + symbol combo is unique
+struct Part {
+    std::string number;
+    int xcord;
+    int ycord;
 
+    Part(std::string n,int x, int y) {
+        number = n;
+        xcord = x;
+        ycord = y;
+    }
+};
 
-bool adjacent(int x1, int x2, int y1, int y2) {
-    int dx = std::abs(x2-x1);
-    int dy = std::abs(y2-y1);
-    return (dx <= 1 && dy <=1);
+struct Symbol {
+    char symbol;;
+    int xcord;
+    int ycord;
+
+    Symbol(char n, int x, int y) {
+        symbol = n;
+        xcord = x;
+        ycord = y;
+    }
+};
+
+bool adjacent(int x1, int y1, int x2, int y2) {
+    int dx = std::abs(x1-x2);
+    int dy = std::abs(y1-y2);
+    return (dx <= 1 && dy <=1 && !(dx == 0 && dy == 0 ));
+}
+
+int calculateSum(std::vector<Part> parts, std::vector<Symbol> symbols) {
+    int sum = 0;
+    for (const auto& p : parts) {
+        bool found = false;
+        for (int i = 0; i < p.number.length() && !found; i++) {
+            for (const auto& s : symbols) {
+                if (adjacent(p.xcord, p.ycord + i, s.xcord,s.ycord)) {
+                    sum += std::stoi(p.number);
+                    found = true;
+                    break;
+                }
+           }
+        }
+    }
+    return sum;
 }
 
 int main() {
@@ -21,80 +58,39 @@ int main() {
     std::string line;
     
     std::regex numberPattern(R"(\d+)");
-    std::map<std::pair<int,int>, int> numberGrid;
-    std::map<std::pair<int,int>, std::string> symbolGrid;
-    std::set<int> parts;
+    std::vector<Part> parts;
+    std::vector<Symbol> symbols;
 
     int row = 0;
     while(std::getline(file,line)) {
         
+        // store parts
         auto numbersIterator = std::sregex_iterator(line.begin(), line.end(), numberPattern);
         auto endLine = std::sregex_iterator();
-        
         for (auto i = numbersIterator; i != endLine; ++i) {
-            for (int j = 0; j < i->length(); j++) {
-                numberGrid[{row,i->position()+j}] = std::stoi(i -> str());
+              parts.push_back(Part(i->str(),row,i->position()));
             }    
-        }   
-        
+
+        // store symbols
         int col = 0;
         for (char c : line) {
             if (!std::isdigit(c) && c != '.') {
-                symbolGrid[{row,col}] = c;
+                symbols.push_back(Symbol(c,row,col));
             }
-            col += 1;
+        col += 1;
         }
+
         row += 1;
+       
     }
-
-    for (const auto& number : numberGrid) {
-        for (const auto& symbol : symbolGrid) {
-           if (adjacent(number.first.first,number.first.second,
-                    symbol.first.first,symbol.first.second)) {
-                        parts.insert(number.second);
-            }
-        }
-    }
-
-    int sum = 0;
-    for (int x : parts) {
-    sum += x;
-    std::cout << x << "\n";
-    }
-    std::cout << sum << "\n";
     
+int result = calculateSum(parts,symbols);
+std::cout << result << "\n";
+return 0;
 
-
-   
-    // 24512 too low
-
-    
-    if (!numberGrid.empty()) {
-    auto it = numberGrid.begin();
-
-    int x = it->first.first;
-    int y = it->first.second;
-    int value = it->second;
-
-    
-
-    std::cout << "(" << x << "," << y << ") = " << value << '\n';
-    }
-
-    if (!symbolGrid.empty()) {
-    auto it = symbolGrid.begin();
-
-    int x = it->first.first;
-    int y = it->first.second;
-    const std::string& value = it->second;
-
-    std::cout << "(" << x << "," << y << ") = " << value << '\n';
-    }
-
-for (const auto& [coord, value] : numberGrid) {
-    auto [x, y] = coord;
-    //std::cout << "(" << x << "," << y << ") = " << value << '\n';
 }
 
-    return 0;
-}
+// 535078
+
+
+
