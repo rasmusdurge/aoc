@@ -1,16 +1,9 @@
-#include "day4Utils.h"
 #include <iostream>
 #include <fstream>
-#include <vector>
-#include <sstream>
-#include <cmath>
+#include "day4Utils.h"
 
+int main () {
 
-int calculateSum(int n) {
-    return std::pow(2,n-1);
-}
-
-int main() {
     std::ifstream file("./input.txt");
     std::string line;
     
@@ -28,8 +21,6 @@ int main() {
         std::istringstream winningNumbers(winnerString);
         std::istringstream lotteryNumbers(lotteryString);
         
-
-        
         winners = readIntoVector(winningNumbers);
         lottery = readIntoVector(lotteryNumbers);
 
@@ -40,16 +31,9 @@ int main() {
                     winCount += 1;
                 }
             }
-        }
-        
-        if (winCount != 0) {
-            sum += calculateSum(winCount);
-        }
-
+        } 
     }
-
-    std::cout << sum << "\n";
     return 0;
 }
 
-// 24542
+
