@@ -35,13 +35,29 @@ bool adjacent(int x1, int y1, int x2, int y2) {
     return (dx <= 1 && dy <=1 && !(dx == 0 && dy == 0 ));
 }
 
-int calculateSum(std::vector<Part> parts, std::vector<Symbol> symbols) {
+int calculateSum(const std::vector<Part>& parts, const std::vector<Symbol>& symbols) {
     int sum = 0;
-
-    // loop over the gears instead
     for (const auto& s : symbols) {
-        // check clockwise.
-        // I think use map and lookups.
+        std::set<int> adjacentParts;
+        for (const auto& p : parts) {
+            for (int i = 0; i < p.number.length() && adjacentParts.size() < 3; i++) {
+                if (adjacent(s.xcord, s.ycord, p.xcord,p.ycord+i)) {
+                    adjacentParts.insert(std::stoi(p.number));
+                }
+           }
+        }
+        int product = 1;
+        if (adjacentParts.size() == 2) {
+           
+            for (int n : adjacentParts) {
+            std::cout << n << "\n";
+            product *= n;
+        }
+        }
+        if (product != 1) {
+            sum += product;
+        }
+        
     }
     return sum;
 }
@@ -57,7 +73,7 @@ int main() {
 
     int row = 0;
     while(std::getline(file,line)) {
-        
+
         // store parts
         auto numbersIterator = std::sregex_iterator(line.begin(), line.end(), numberPattern);
         auto endLine = std::sregex_iterator();
@@ -73,9 +89,7 @@ int main() {
             }
         col += 1;
         }
-
         row += 1;
-       
     }
     
 int result = calculateSum(parts,symbols);
@@ -83,6 +97,8 @@ std::cout << result << "\n";
 return 0;
 
 }
+// 75312571 
+
 
 
 
