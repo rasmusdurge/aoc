@@ -8,6 +8,7 @@ int main () {
     std::string line;
     
     int sum = 0;
+    int row = 0;
     while(std::getline(file,line)) {
 
         std::vector<int> winners;
@@ -32,8 +33,24 @@ int main () {
                 }
             }
         } 
+
+        sum += winCount;
+ 
+        if (winCount == 0) {
+            sum += 1;
+        }
+        
+        row += 1;
+        std::cout << "Winners for Card " << row << ": " <<  winCount << "\n";
+        
     }
+    std::cout << sum << "\n";
+    
     return 0;
 }
+
+// 906 too low
+
+// 937 too low
 
 
